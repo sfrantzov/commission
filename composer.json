@@ -1,0 +1,26 @@
+{
+  "name": "stoyan/commission",
+  "description": "PHP test application for money calculations",
+  "authors": [
+    {
+      "name": "Stoyan Frantsov",
+      "email": "stoyan@emind.bg"
+    }
+  ],
+  "require": {
+    "php": ">=7.1.3",
+    "beberlei/assert": "^3.2",
+    "maba/monetary": "^0.9.2"
+  },
+  "require-dev": {
+    "symfony/var-dumper": "^4.2",
+    "phpunit/phpunit": "^5",
+    "symfony/var-dumper": "^3.4"
+  },
+  "autoload": {
+    "psr-4": {
+      "Commission\\": "src",
+      "Commission\\Tests\\": "test"
+    }
+  }
+}

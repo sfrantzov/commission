@@ -1,0 +1,18 @@
+version: '2'
+
+services:
+  cli:
+    build: docker/cli
+    restart: always
+    working_dir: /app
+    volumes:
+      - .:/app
+      - ./docker/cli/php.ini:/usr/local/etc/php/conf.d/100-custom.ini
+      - /composer
+      - $SSH_AUTH_SOCK:/ssh-agent
+      - $HOME/.ssh/known_hosts:/home/appuser/.ssh/known_hosts
+    tty: true
+    stdin_open: true
+    command: '/bin/bash'
+    environment:
+      - SSH_AUTH_SOCK=/ssh-agent
