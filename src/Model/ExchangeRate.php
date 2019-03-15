@@ -12,12 +12,12 @@ class ExchangeRate extends Model
     /**
      * @var string
      */
-    private $currency;
+    protected $currency;
 
     /**
      * @var float
      */
-    private $exchangeRate;
+    protected $exchangeRate;
 
     /**
      * Get currency
@@ -34,9 +34,9 @@ class ExchangeRate extends Model
      *
      * @param string $currency
      */
-    public function setCurrency($currecny)
+    public function setCurrency($currency)
     {
-        $this->currency = $currecny;
+        $this->currency = $currency;
     }
 
     /**
@@ -52,7 +52,7 @@ class ExchangeRate extends Model
     /**
      * Set exchange rate
      *
-     * @param float
+     * @param float $exchangeRate
      */
     public function setExchangeRate($exchangeRate)
     {

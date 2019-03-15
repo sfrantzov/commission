@@ -2,6 +2,7 @@
 
 namespace Commission\Base;
 
+use Commission\Base\Traits\ConfigTrait;
 use Commission\Base\Traits\MagicParamsTrait;
 use Commission\Base\Traits\MagicTrait;
 
@@ -10,6 +11,7 @@ use Commission\Base\Traits\MagicTrait;
  */
 abstract class Model
 {
+    use ConfigTrait;
     use MagicParamsTrait;
     use MagicTrait;
 }

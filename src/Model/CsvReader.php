@@ -5,12 +5,12 @@ namespace Commission\Model;
 use Assert\Assert;
 use Commission\Base\Model;
 use Commission\Exception\StreamException;
-use Commission\Model\Interfaces\StreamInterface;
+use Commission\Model\Interfaces\InputStreamInterface;
 
 /**
  * Read CSV file
  */
-class CsvReader extends Model implements StreamInterface
+class CsvReader extends Model implements InputStreamInterface
 {
     /**
      * @var string
@@ -45,7 +45,8 @@ class CsvReader extends Model implements StreamInterface
     }
 
     /**
-     * @return resource|false
+     * @return InputStreamInterface
+     * @throws StreamException
      */
     public function getStream()
     {
@@ -53,7 +54,7 @@ class CsvReader extends Model implements StreamInterface
         if (!$this->fileHandle) {
             throw new StreamException("File can't open");
         }
-        return $this->fileHandle;
+        return $this;
     }
 
     /**
@@ -64,7 +65,7 @@ class CsvReader extends Model implements StreamInterface
         $row = fgetcsv($this->fileHandle, 0, ",");
         if ($row) {
             return new Input([
-                'date' => new \DateTimeImmutable(trim($row[0])),
+                'date' => trim($row[0]),
                 'userId' => (int) trim($row[1]),
                 'userType' => trim($row[2]),
                 'operationType' => trim($row[3]),
@@ -72,5 +73,13 @@ class CsvReader extends Model implements StreamInterface
                 'currency' => trim($row[5])
             ]);
         }
+    }
+
+    /**
+     * Close file handle
+     */
+    public function closeStream()
+    {
+       fclose($this->fileHandle);
     }
 }

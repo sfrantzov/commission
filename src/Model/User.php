@@ -4,76 +4,85 @@ namespace Commission\Model;
 
 use Assert\Assert;
 use Commission\Base\Model;
+use Commission\Collection\CashOutCollection;
 use Maba\Component\Monetary\Money;
+use Maba\Component\Monetary\MoneyInterface;
 
 /**
  * User object
  *
  * Params:
  *
- * @property Money $cashIn
- * @property Money $cashOut
  * @property int $userId
+ * @property string $userType
  */
 class User extends Model
 {
     /**
-     * @var Money
+     * @var CashOutCollection
      */
-    private $cashIn;
+    protected $cashOut;
 
     /**
-     * @var Money
+     * @var array
      */
-    private $cashOut;
+    protected $count = [];
 
     /**
      * @var int
      */
-    private $userId;
+    protected $userId;
 
     /**
-     * Get cache in
-     *
-     * @return string
+     * @var string
      */
-    public function getCashIn()
-    {
-        return $this->cashIn;
-    }
-
-    /**
-     * set cash is
-     *
-     * @param Money $cashIn
-     */
-    public function setCashIn(Money $cashIn)
-    {
-        $this->cashIn = $cashIn;
-    }
+    protected $userType;
 
     /**
      * get cash out
      *
-     * @return Money
+     * @param $week
+     * @return MoneyInterface
      */
-    public function getCashOut()
+    public function getCashOut($week)
     {
-        return $this->cashIn;
+        $this->initCounter($week);
+        if (!isset($this->cashOut[$week])) {
+            $this->cashOut[$week] = new Money(0, null);
+        }
+        return $this->cashOut[$week];
     }
 
     /**
      * Set cash out
      *
-     * @param Money $cashOut
+     * @param MoneyInterface $cashOut
+     * @param int $week
      */
-    public function setCashOut(Money $cashOut)
+    public function setCashOut(MoneyInterface $cashOut, $week)
     {
-        $this->cashOut = $cashOut;
+        if (empty($this->cashOut)) {
+            $this->cashOut = new CashOutCollection();
+        }
+        $this->initCounter($week);
+        $this->count[$week]++;
+        $this->cashOut[$week] = $cashOut;
     }
 
     /**
-     * Get amount
+     * get cash out
+     *
+     * @param int $week
+     * @return array
+     */
+    public function getCount($week)
+    {
+        $this->initCounter($week);
+        return $this->count[$week];
+    }
+
+    /**
+     * Get userId
      *
      * @return string
      */
@@ -83,7 +92,7 @@ class User extends Model
     }
 
     /**
-     * Get userId
+     * Set userId
      *
      * @param int $userId
      */
@@ -91,6 +100,27 @@ class User extends Model
     {
         Assert::that($userId)->integerish()->greaterThan(0);
         $this->userId = $userId;
+    }
+
+    /**
+     * Get user type
+     *
+     * @return string
+     */
+    public function getUserType()
+    {
+        return $this->userType;
+    }
+
+    /**
+     * Get userType
+     *
+     * @param string $userType
+     */
+    public function setUserType($userType)
+    {
+        Assert::that($userType)->inArray([Input::USER_LEGAL, Input::USER_NATURAL], 'User type must be from ' . implode(', ', [Input::USER_LEGAL, Input::USER_NATURAL]));
+        $this->userType = $userType;
     }
 
     public static function create($user)
@@ -111,4 +141,12 @@ class User extends Model
         }
         return new static($params);
     }
+
+    protected function initCounter($week)
+    {
+        if (!isset($this->cashOut[$week])) {
+            $this->count[$week] = 0;
+        }
+    }
+
 }

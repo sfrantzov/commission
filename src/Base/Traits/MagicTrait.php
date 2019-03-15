@@ -36,7 +36,7 @@ trait MagicTrait
         } elseif (method_exists(get_class($this), $name)) {
             return $this->$name(); //isXXX, hasXXX, etc.
         } else {
-            throw new PropertyExceptionn(sprintf('Property "%s" has no getter', $name));
+            throw new PropertyException(sprintf('Property "%s" has no getter', $name));
         }
     }
 

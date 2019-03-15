@@ -6,7 +6,6 @@ use Commission\Collection\ExchangeRateCollection;
 use Commission\Collection\UserCollection;
 use Commission\Model\ExchangeRate;
 use Commission\Model\User;
-use Maba\Component\Monetary\Money;
 
 /**
  *  Utils to help creating objects
@@ -45,12 +44,29 @@ class Util
             return $collection[$userId];
         } else {
             $user = new User([
-                'userId' => $userId,
-                'cashIn' => new Money(0, null),
-                'cashOut' => new Money(0, null)
+                'userId' => $userId
             ]);
             $collection[$userId] = $user;
             return $user;
         }
+    }
+
+    /**
+     * @param \DateTimeImmutable $date
+     * @return string
+     */
+    public static function getWeek(\DateTimeImmutable $date)
+    {
+        $week = $date->format('YW');
+        $weekOnly = (int) $date->format('W');
+
+        if ($date->format('m') === '12' && $weekOnly === 1) {
+            return ((int)$date->format('Y') + 1) . '01';
+        }
+        if ($date->format('m') === '01' && $weekOnly > 51) {
+            return ((int)$date->format('Y') - 1) . $date->format('W');
+        }
+
+        return $week;
     }
 }

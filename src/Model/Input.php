@@ -3,6 +3,7 @@
 namespace Commission\Model;
 
 use Assert\Assert;
+use Assert\InvalidArgumentException;
 use Commission\Base\Model;
 
 /**
@@ -20,34 +21,34 @@ use Commission\Base\Model;
 class Input extends Model
 {
     /**
-     * @var string
+     * @var \DateTimeImmutable
      */
-    private $date;
+    protected $date;
 
     /**
      * @var int
      */
-    private $userId;
+    protected $userId;
 
     /**
      * @var string
      */
-    private $userType;
+    protected $userType;
 
     /**
      * @var string
      */
-    private $operationType;
+    protected $operationType;
 
     /**
      * @var string
      */
-    private $amount;
+    protected $amount;
 
     /**
      * @var string
      */
-    private $currency;
+    protected $currency;
 
     /**
      * Supported user types
@@ -74,12 +75,18 @@ class Input extends Model
     /**
      * Get date
      *
-     * @param \DateTimeImmutable
+     * @param string
      */
     public function setDate($date)
     {
-        $this->date = $date;
+        Assert::that($date)->notEmpty("Amount must not be empty");
+        try {
+            $this->date = new \DateTimeImmutable($date);
+        } catch (\Exception $e) {
+            throw new InvalidArgumentException($e->getMessage(), $e->getCode(), 'date', $date);
+        }
     }
+
 
     /**
      * Get userId
@@ -119,7 +126,8 @@ class Input extends Model
      */
     public function setUserType($userType)
     {
-        Assert::that($userType)->inArray([Input::USER_LEGAL, Input::USER_NATURAL], 'User type must be from ' . implode(', ', [Input::USER_LEGAL, Input::USER_NATURAL]));
+        $allowedTypes = [Input::USER_LEGAL, Input::USER_NATURAL];
+        Assert::that($userType)->inArray($allowedTypes, 'User type must be from ' . implode(', ', $allowedTypes));
         $this->userType = $userType;
     }
 
@@ -140,7 +148,8 @@ class Input extends Model
      */
     public function setOperationType($operationType)
     {
-        Assert::that($operationType)->inArray([Input::CASH_IN, Input::CASH_OUT], 'Operation type must be from ' . implode(', ', [Input::CASH_IN, Input::CASH_OUT]));
+        $allowedTypes = [Input::CASH_IN, Input::CASH_OUT];
+        Assert::that($operationType)->inArray($allowedTypes, 'Operation type must be from ' . implode(', ', $allowedTypes));
         $this->operationType = $operationType;
     }
 
@@ -157,11 +166,11 @@ class Input extends Model
     /**
      * Set amount
      *
-     * @param string $amount
+     * @param float $amount
      */
     public function setAmount($amount)
     {
-        Assert::that($amount)->notEmpty("Amount must not be empty");
+        Assert::that($amount)->notEmpty("Amount must not be empty")->greaterThan(0);
         $this->amount = $amount;
     }
 

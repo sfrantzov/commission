@@ -7,14 +7,12 @@ interface StreamInterface
     /**
      * Get resource we can loop
      *
-     * @return resource|null
+     * @return StreamInterface
      */
     public function getStream();
 
     /**
-     * Map resource entity to Input object
-     *
-     * @return Input|null
+     * Close stream
      */
-    public function getRow();
+    public function closeStream();
 }
