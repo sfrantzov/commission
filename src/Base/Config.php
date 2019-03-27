@@ -12,7 +12,7 @@ class Config
     protected $configArray;
 
     /**
-     * @var array
+     * @var Config
      */
     private static $instance = null;
 

@@ -123,25 +123,6 @@ class User extends Model
         $this->userType = $userType;
     }
 
-    public static function create($user)
-    {
-        if ($user instanceof static) {
-            return $user;
-        }
-
-        if ($user instanceof self) {
-            $params = [
-                'userId' => $user->userId,
-            ];
-        } elseif (is_array($user)) {
-            $params = $user;
-        } else {
-            $error = 'The user must be an instance of "' . self::class . '", an array of parameters';
-            throw new \InvalidArgumentException($error);
-        }
-        return new static($params);
-    }
-
     protected function initCounter($week)
     {
         if (!isset($this->cashOut[$week])) {
