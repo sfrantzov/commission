@@ -21,8 +21,7 @@ class CashInLogicTest extends AbstractTest
      */
     public function test_cash_in_valid_income($amount, $expectedAmount, $currency)
     {
-        $this->setConfig();
-        $this->shouldBe('cash in commission for ' . $amount . ' ' . $currency . ' is ' . $expectedAmount, function () use ($amount, $expectedAmount, $currency) {
+           $this->shouldBe('cash in commission for ' . $amount . ' ' . $currency . ' is ' . $expectedAmount, function () use ($amount, $expectedAmount, $currency) {
 
             $input = $this->getInput([
                 'date' => 'now',
@@ -33,7 +32,7 @@ class CashInLogicTest extends AbstractTest
                 'currency' => $currency
             ]);
 
-            $commission = (new $this->logicClass)->process($this->getApplication(), $this->getUser(1), $input);
+            $commission =  (new $this->logicClass($this->getLogicConfig()))->process($this->getApplication(), $this->getUser(1), $input);
 
             $formatter = $this->getApplication()->getFormatter();
             $context = new FormattingContext();
@@ -56,7 +55,6 @@ class CashInLogicTest extends AbstractTest
      */
     public function test_cash_in_invalid_income($amount, $expectedAmount, $currency)
     {
-        $this->setConfig();
         $this->shouldThrowExceptionIf('Invalid currency ' . $currency, function () use ($amount, $expectedAmount, $currency) {
 
             $input = $this->getInput([
@@ -68,7 +66,7 @@ class CashInLogicTest extends AbstractTest
                 'currency' => $currency
             ]);
 
-            (new $this->logicClass)->process($this->getApplication(), $this->getUser(1), $input);
+            (new $this->logicClass($this->getLogicConfig()))->process($this->getApplication(), $this->getUser(1), $input);
         }, [
             'throws' => InvalidArgumentException::class
         ]);

@@ -22,7 +22,6 @@ class InputTest extends AbstractTest
      */
     public function test_input_valid_income($date, $userId, $userType, $operationType, $amount, $currency)
     {
-        $this->setConfig();
         $this->shouldBe('input for ' . $date . ' userId ' . $userId . ' type ' . $userType. ' operation ' . $operationType . ' amount ' . $amount . ' currency ' . $currency, function () use ($date, $userId, $userType, $operationType, $amount, $currency) {
 
             $this->getInput([
@@ -50,7 +49,6 @@ class InputTest extends AbstractTest
     public function test_input_invalid_income($date, $userId, $userType, $operationType, $amount, $currency)
     {
 
-        $this->setConfig();
         $this->shouldThrowExceptionIf('input for ' . $date . ' userId ' . $userId . ' type ' . $userType. ' operation ' . $operationType . ' amount ' . $amount . ' currency ' . $currency, function () use ($date, $userId, $userType, $operationType, $amount, $currency) {
 
             $this->getInput([

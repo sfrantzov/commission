@@ -32,7 +32,6 @@ class CashOutNaturalLogicTest extends AbstractTest
      */
     public function test_cash_out_valid_income($date, $userId, $amount, $expectedAmount, $currency)
     {
-        $this->setConfig();
         $this->shouldBe('cash out  commission for date ' . $date . ' user ' . $userId . ' amount ' . $amount . ' ' . $currency . ' is ' . $expectedAmount, function () use ($date, $userId, $amount, $expectedAmount, $currency) {
 
             $input = $this->getInput([
@@ -48,7 +47,7 @@ class CashOutNaturalLogicTest extends AbstractTest
             $user = Util::getOrCreateUser($users, $input->userId);
             $user->userType = $input->userType;
 
-            $commission = (new $this->logicClass)->process($this->getApplication(), $user, $input);
+            $commission =  (new $this->logicClass($this->getLogicConfig()))->process($this->getApplication(), $user, $input);
 
             $formatter = $this->getApplication()->getFormatter();
             $context = new FormattingContext();
@@ -70,7 +69,6 @@ class CashOutNaturalLogicTest extends AbstractTest
      */
     public function test_cash_out_invalid_income($amount, $expectedAmount, $currency)
     {
-        $this->setConfig();
         $this->shouldThrowExceptionIf('Invalid currency ' . $currency, function () use ($amount, $expectedAmount, $currency) {
             $input = $this->getInput([
                 'date' => 'now',
@@ -81,7 +79,7 @@ class CashOutNaturalLogicTest extends AbstractTest
                 'currency' => $currency
             ]);
 
-            (new $this->logicClass)->process($this->getApplication(), $this->getUser(1), $input);
+            (new $this->logicClass($this->getLogicConfig()))->process($this->getApplication(), $this->getUser(1), $input);
         }, [
             'throws' => InvalidArgumentException::class
         ]);

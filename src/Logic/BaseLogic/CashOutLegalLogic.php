@@ -27,9 +27,9 @@ class CashOutLegalLogic extends AbstractBaseLogic
         $this->application = $application;
         $originalAmount = $this->getOriginalAmount($input);
 
-        $defaultCurrency = $this->getConfig('application.defaultCurrency');
-        $cashOutCommission = $this->getConfig('baseLogic.legalCashOutCommission') / 100;
-        $minCashOutCommission = $this->getConfig('baseLogic.minLegalCashOutCommission');
+        $defaultCurrency = $this->application->getDefaultCurrency();
+        $cashOutCommission = $this->config->getConfig('legalCashOutCommission') / 100;
+        $minCashOutCommission = $this->config->getConfig('minLegalCashOutCommission');
 
         $commission = $this->application->calculator->mul(
             $originalAmount,

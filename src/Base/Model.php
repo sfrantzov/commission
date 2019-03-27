@@ -11,7 +11,6 @@ use Commission\Base\Traits\MagicTrait;
  */
 abstract class Model
 {
-    use ConfigTrait;
     use MagicParamsTrait;
     use MagicTrait;
 }

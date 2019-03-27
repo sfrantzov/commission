@@ -4,7 +4,6 @@ namespace Commission\Logic\BaseLogic;
 
 use Assert\Assert;
 use Assert\InvalidArgumentException;
-use Commission\Base\Traits\ConfigTrait;
 use Commission\Commission;
 use Commission\Model\Input;
 use Commission\Model\User;
@@ -17,11 +16,23 @@ use Maba\Component\Monetary\MoneyInterface;
  */
 abstract class AbstractBaseLogic
 {
-    use ConfigTrait;
     /**
      * @var Commission
      */
     protected $application;
+
+    /**
+     * @var BaseLogicConfig
+     */
+    protected $config;
+
+    /**
+     * @param BaseLogicConfig $config
+     */
+    public function __construct(BaseLogicConfig $config)
+    {
+        $this->config = $config;
+    }
 
     /**
      * execute specific commission logic
@@ -72,7 +83,7 @@ abstract class AbstractBaseLogic
     protected function convertAmount(MoneyInterface $originalAmount)
     {
         $convertedAmount = $this->application->calculator->div(
-            new Money($originalAmount->getAmount(), $this->getConfig('application.defaultCurrency')),
+            new Money($originalAmount->getAmount(), $this->application->getDefaultCurrency()),
             $this->application->exchangeRates[$originalAmount->getCurrency()]->getExchangeRate()
         );
         return $convertedAmount;

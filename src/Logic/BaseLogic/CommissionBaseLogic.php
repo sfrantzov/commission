@@ -13,6 +13,19 @@ use Maba\Component\Monetary\MoneyInterface;
 class CommissionBaseLogic
 {
     /**
+     * @var BaseLogicConfig
+     */
+    protected $config;
+
+    /**
+     * @param BaseLogicConfig $config
+     */
+    public function __construct(BaseLogicConfig $config)
+    {
+        $this->config = $config;
+    }
+
+    /**
      * execute specific commission logic
      *
      * @param Commission $application
@@ -23,12 +36,12 @@ class CommissionBaseLogic
     public function process(Commission $application, User $user, Input $input)
     {
         if ($input->operationType == Input::CASH_IN) {
-            $commission = (new CashInLogic)->process($application, $user, $input);
+            $commission = (new CashInLogic($this->config))->process($application, $user, $input);
         } else {
             if ($user->userType == Input::USER_LEGAL) {
-                $commission = (new CashOutLegalLogic)->process($application, $user, $input);
+                $commission = (new CashOutLegalLogic($this->config))->process($application, $user, $input);
             } else {
-                $commission = (new CashOutNaturalLogic)->process($application, $user, $input);
+                $commission = (new CashOutNaturalLogic($this->config))->process($application, $user, $input);
             }
         }
         return $commission;

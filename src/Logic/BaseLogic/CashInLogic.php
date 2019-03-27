@@ -27,8 +27,8 @@ class CashInLogic extends AbstractBaseLogic
         $this->application = $application;
         $originalAmount = $this->getOriginalAmount($input);
 
-        $cashInCommission = $this->getConfig('baseLogic.cashInCommission') / 100;
-        $maxCashInCommission = $this->getConfig('baseLogic.maxCashInCommission');
+        $cashInCommission = $this->config->getConfig('cashInCommission') / 100;
+        $maxCashInCommission = $this->config->getConfig('maxCashInCommission');
 
         $commission = $this->application->calculator->mul(
             $originalAmount,
@@ -42,7 +42,7 @@ class CashInLogic extends AbstractBaseLogic
             ),
             new Money(
                 $maxCashInCommission,
-                $this->getConfig('application.defaultCurrency')
+                $this->application->getDefaultCurrency()
             )
         )) {
             $commission = $this->reverseConvertAmount(

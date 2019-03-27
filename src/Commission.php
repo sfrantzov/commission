@@ -2,10 +2,12 @@
 
 namespace Commission;
 
+use Commission\Base\Config;
 use Commission\Base\Model;
 use Commission\Base\Util;
 use Commission\Collection\ExchangeRateCollection;
 use Commission\Collection\UserCollection;
+use Commission\Logic\BaseLogic\BaseLogicConfig;
 use Commission\Logic\BaseLogic\CommissionBaseLogic;
 use Commission\Model\Input;
 use Commission\Model\Interfaces\InputStreamInterface;
@@ -37,6 +39,11 @@ class Commission extends Model
     protected $calculator;
 
     /**
+     * @var Config
+     */
+    protected $config;
+
+    /**
      * @var ExchangeRateCollection
      */
     protected $exchangeRates;
@@ -46,9 +53,12 @@ class Commission extends Model
      */
     protected $formatter;
 
-    public function __construct($params = [])
+    /**
+     * @param Config $config
+     */
+    public function __construct(Config $config)
     {
-        $this->init();
+        $this->init($config);
     }
 
     /**
@@ -59,6 +69,16 @@ class Commission extends Model
     public function getCalculator()
     {
         return $this->calculator;
+    }
+
+    /**
+     * returns default currency defined in application config
+     *
+     * @return string
+     */
+    public function getDefaultCurrency()
+    {
+        return $this->config->getConfig('application.defaultCurrency');
     }
 
     /**
@@ -81,8 +101,15 @@ class Commission extends Model
         return $this->formatter;
     }
 
-    protected function init()
+    /**
+     * init application
+     *
+     * @param Config $config
+     */
+    protected function init(Config $config)
     {
+        $this->config = $config;
+
         $math = new Math(new BcMath());
         $informationProvider = new MoneyInformationProvider();
         $factory = new MoneyFactory($math, new MoneyValidator($math, $informationProvider, new NumberValidator()));
@@ -96,7 +123,7 @@ class Commission extends Model
             '%amount%'
         );
         $this->exchangeRates = new ExchangeRateCollection();
-        foreach ($this->getConfig('application.currencyExchangeRates') as $code => $rate) {
+        foreach ($this->config->getConfig('application.currencyExchangeRates') as $code => $rate) {
             Util::getOrCreateExchangeRate($this->exchangeRates, $code, $rate);
         }
     }
@@ -114,7 +141,9 @@ class Commission extends Model
             $user = Util::getOrCreateUser($users, $input->userId);
             $user->userType = $input->userType;
 
-            $logic = new CommissionBaseLogic();
+            $baseLogicConfig = new BaseLogicConfig($this->config->getConfig('baseLogic'));
+            $logic = new CommissionBaseLogic($baseLogicConfig);
+
             /* @var MoneyInterface $commission */
             $commission = $logic->process($this, $user, $input);
 

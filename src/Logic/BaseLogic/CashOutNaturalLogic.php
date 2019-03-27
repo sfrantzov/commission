@@ -28,10 +28,10 @@ class CashOutNaturalLogic extends AbstractBaseLogic
         $this->application = $application;
         $originalAmount = $this->getOriginalAmount($input);
 
-        $defaultCurrency = $this->getConfig('application.defaultCurrency');
-        $freeCashOut = $this->getConfig('baseLogic.maxNaturalFreeCashOut');
-        $cashOutCommission = $this->getConfig('baseLogic.naturalCashOutCommission') / 100;
-        $maxCashOutCommission = $this->getConfig('baseLogic.maxNaturalCashOutCommission');
+        $defaultCurrency = $this->application->getDefaultCurrency();
+        $freeCashOut = $this->config->getConfig('maxNaturalFreeCashOut');
+        $cashOutCommission = $this->config->getConfig('naturalCashOutCommission') / 100;
+        $maxCashOutCommission = $this->config->getConfig('maxNaturalCashOutCommission');
 
         $week = Util::getWeek($input->date);
         $oldCashOut = $user->getCashOut($week);

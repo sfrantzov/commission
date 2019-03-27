@@ -12,25 +12,9 @@ class Config
     protected $configArray;
 
     /**
-     * @var Config
-     */
-    private static $instance = null;
-
-    /**
-     * @return Config
-     */
-    public static function getInstance()
-    {
-        if (self::$instance == null) {
-            self::$instance = new Config();
-        }
-        return self::$instance;
-    }
-
-    /**
      * @throws ConfigException
      */
-    private function __construct()
+    public function __construct()
     {
         $configFile =  __DIR__ . '/../../config/global.config.php';
         if (!is_file($configFile)) {
@@ -40,18 +24,45 @@ class Config
     }
 
     /**
-     * @return array
-     */
-    public function getConfig()
-    {
-        return $this->configArray;
-    }
-
-    /**
      * @param array $configArray
      */
     public function setConfig($configArray)
     {
         $this->configArray = $configArray;
+    }
+
+    /**
+     * @param string $code
+     * @return array|string
+     * @throws ConfigException
+     */
+    public function getConfig($code)
+    {
+        $configArray = $this->configArray;
+
+        $result = null;
+        if (strpos($code, '.') === false) {
+            $result = isset($configArray[$code]) ? $configArray[$code] : null;
+        } else {
+            $paths = explode('.', $code);
+            foreach ($paths as $key => $path) {
+                if (isset($configArray[$path])) {
+                    $value = $configArray[$path];
+                    if (is_array($value)) {
+                        $configArray = $configArray[$path];
+                    }
+                    unset($paths[$key]);
+                }
+            }
+            if (count($paths) == 0) {
+                $result = $value;
+            }
+        }
+
+        if ($result === null) {
+            throw new ConfigException('Configuration missing:' . $code);
+        }
+
+        return $result;
     }
 }

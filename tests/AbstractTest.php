@@ -4,6 +4,7 @@ namespace Commission\Tests;
 
 use Commission\Base\Config;
 use Commission\Commission;
+use Commission\Logic\BaseLogic\BaseLogicConfig;
 use Commission\Model\Input;
 use Commission\Model\User;
 use PHPUnit\Framework\TestCase;
@@ -24,7 +25,7 @@ abstract class AbstractTest extends TestCase
 
     public function getApplication()
     {
-        return new Commission();
+        return new Commission($this->getConfig());
     }
 
     public function getUser($userId)
@@ -39,11 +40,18 @@ abstract class AbstractTest extends TestCase
         return new Input($params);
     }
 
-    public function setConfig()
+    public function getConfig()
     {
         $configArray = (array) include 'tests.config.php';
-        $config = Config::getInstance();
+        $config = new Config();
         $config->setConfig($configArray);
+
+        return $config;
+    }
+
+    public function getLogicConfig()
+    {
+        return new BaseLogicConfig($this->getConfig()->getConfig('baseLogic'));
     }
 
     public function shouldBe($specification, \Closure $callable = null, $params = [])
