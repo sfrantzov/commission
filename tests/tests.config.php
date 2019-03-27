@@ -1,6 +1,6 @@
 <?php
 /**
-* Global config
+* test config
 */
 return
 [

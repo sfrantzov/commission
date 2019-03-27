@@ -2,8 +2,8 @@
 
 namespace Commission\Logic\BaseLogic;
 
-use Commission\Base\Date;
 use Commission\Commission;
+use Commission\Model\Date;
 use Commission\Model\Input;
 use Commission\Model\User;
 use Maba\Component\Monetary\Money;

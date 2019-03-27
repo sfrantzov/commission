@@ -2,8 +2,7 @@
 
 namespace Commission\Tests;
 
-use Commission\Base\Date;
-use Commission\Base\Util;
+use Commission\Model\Date;
 
 class WeekTest extends AbstractTest
 {

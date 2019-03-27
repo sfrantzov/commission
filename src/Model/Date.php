@@ -1,6 +1,6 @@
 <?php
 
-namespace Commission\Base;
+namespace Commission\Model;
 
 /**
  *  Date

@@ -4,6 +4,9 @@ namespace Commission\Base;
 
 use Commission\Exception\ConfigException;
 
+/**
+ * Config class for the application
+ */
 class Config
 {
     /**

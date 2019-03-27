@@ -5,7 +5,6 @@ namespace Commission\Tests;
 use Assert\InvalidArgumentException;
 use Commission\Logic\BaseLogic\CashInLogic;
 use Maba\Component\Monetary\Formatting\FormattingContext;
-use Maba\Component\Monetary\Money;
 
 class CashInLogicTest extends AbstractTest
 {
