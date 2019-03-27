@@ -4,29 +4,17 @@ namespace Commission\Model;
 
 use Assert\Assert;
 use Commission\Base\Model;
-use Commission\Collection\CashOutCollection;
-use Maba\Component\Monetary\Money;
-use Maba\Component\Monetary\MoneyInterface;
 
 /**
  * User object
  *
- * Params:
- *
- * @property int $userId
- * @property string $userType
  */
 class User extends Model
 {
     /**
-     * @var CashOutCollection
+     * @var CashOut
      */
     protected $cashOut;
-
-    /**
-     * @var array
-     */
-    protected $count = [];
 
     /**
      * @var int
@@ -41,44 +29,21 @@ class User extends Model
     /**
      * get cash out
      *
-     * @param $week
-     * @return MoneyInterface
+     * @return CashOut
      */
-    public function getCashOut($week)
+    public function getCashOut()
     {
-        $this->initCounter($week);
-        if (!isset($this->cashOut[$week])) {
-            $this->cashOut[$week] = new Money(0, null);
-        }
-        return $this->cashOut[$week];
+        return $this->cashOut;
     }
 
     /**
      * Set cash out
      *
-     * @param MoneyInterface $cashOut
-     * @param int $week
+     * @param CashOut $cashOut
      */
-    public function setCashOut(MoneyInterface $cashOut, $week)
+    public function setCashOut(CashOut $cashOut)
     {
-        if (empty($this->cashOut)) {
-            $this->cashOut = new CashOutCollection();
-        }
-        $this->initCounter($week);
-        $this->count[$week]++;
-        $this->cashOut[$week] = $cashOut;
-    }
-
-    /**
-     * get cash out
-     *
-     * @param int $week
-     * @return array
-     */
-    public function getCount($week)
-    {
-        $this->initCounter($week);
-        return $this->count[$week];
+        $this->cashOut = $cashOut;
     }
 
     /**
@@ -122,12 +87,4 @@ class User extends Model
         Assert::that($userType)->inArray([Input::USER_LEGAL, Input::USER_NATURAL], 'User type must be from ' . implode(', ', [Input::USER_LEGAL, Input::USER_NATURAL]));
         $this->userType = $userType;
     }
-
-    protected function initCounter($week)
-    {
-        if (!isset($this->cashOut[$week])) {
-            $this->count[$week] = 0;
-        }
-    }
-
 }

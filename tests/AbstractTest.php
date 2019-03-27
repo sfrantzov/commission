@@ -5,6 +5,7 @@ namespace Commission\Tests;
 use Commission\Base\Config;
 use Commission\Commission;
 use Commission\Logic\BaseLogic\BaseLogicConfig;
+use Commission\Model\CashOut;
 use Commission\Model\Input;
 use Commission\Model\User;
 use PHPUnit\Framework\TestCase;
@@ -31,7 +32,8 @@ abstract class AbstractTest extends TestCase
     public function getUser($userId)
     {
         return new User([
-            'userId' => $userId
+            'userId' => $userId,
+            'cashOut' => new CashOut()
         ]);
     }
 

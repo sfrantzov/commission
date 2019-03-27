@@ -30,13 +30,13 @@ class CashInLogic extends AbstractBaseLogic
         $cashInCommission = $this->config->getConfig('cashInCommission') / 100;
         $maxCashInCommission = $this->config->getConfig('maxCashInCommission');
 
-        $commission = $this->application->calculator->mul(
+        $commission = $this->application->getCalculator()->mul(
             $originalAmount,
             $cashInCommission
         );
 
-        if ($this->application->calculator->isGt(
-            $this->application->calculator->mul(
+        if ($this->application->getCalculator()->isGt(
+            $this->application->getCalculator()->mul(
                 $this->convertAmount($originalAmount),
                 $cashInCommission
             ),
@@ -52,6 +52,6 @@ class CashInLogic extends AbstractBaseLogic
                 )
             );
         }
-        return $application->calculator->ceil($commission);
+        return $application->getCalculator()->ceil($commission);
     }
 }

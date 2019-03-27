@@ -31,11 +31,11 @@ class CashOutLegalLogic extends AbstractBaseLogic
         $cashOutCommission = $this->config->getConfig('legalCashOutCommission') / 100;
         $minCashOutCommission = $this->config->getConfig('minLegalCashOutCommission');
 
-        $commission = $this->application->calculator->mul(
+        $commission = $this->application->getCalculator()->mul(
             $originalAmount,
             $cashOutCommission
         );
-        if ($this->application->calculator->isLt(
+        if ($this->application->getCalculator()->isLt(
             $this->convertAmount($commission),
             new Money(
                 $minCashOutCommission,
@@ -49,6 +49,6 @@ class CashOutLegalLogic extends AbstractBaseLogic
                 )
             );
         }
-        return $application->calculator->ceil($commission);
+        return $application->getCalculator()->ceil($commission);
     }
 }

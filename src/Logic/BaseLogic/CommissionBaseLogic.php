@@ -35,10 +35,10 @@ class CommissionBaseLogic
      */
     public function process(Commission $application, User $user, Input $input)
     {
-        if ($input->operationType == Input::CASH_IN) {
+        if ($input->getOperationType() == Input::CASH_IN) {
             $commission = (new CashInLogic($this->config))->process($application, $user, $input);
         } else {
-            if ($user->userType == Input::USER_LEGAL) {
+            if ($user->getUserType() == Input::USER_LEGAL) {
                 $commission = (new CashOutLegalLogic($this->config))->process($application, $user, $input);
             } else {
                 $commission = (new CashOutNaturalLogic($this->config))->process($application, $user, $input);

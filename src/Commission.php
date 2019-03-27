@@ -3,15 +3,16 @@
 namespace Commission;
 
 use Commission\Base\Config;
-use Commission\Base\Model;
-use Commission\Base\Util;
 use Commission\Collection\ExchangeRateCollection;
 use Commission\Collection\UserCollection;
 use Commission\Logic\BaseLogic\BaseLogicConfig;
 use Commission\Logic\BaseLogic\CommissionBaseLogic;
+use Commission\Model\CashOut;
+use Commission\Model\ExchangeRate;
 use Commission\Model\Input;
 use Commission\Model\Interfaces\InputStreamInterface;
 use Commission\Model\Interfaces\OutputStreamInterface;
+use Commission\Model\User;
 use Maba\Component\Math\BcMath;
 use Maba\Component\Math\Math;
 use Maba\Component\Math\NumberFormatter;
@@ -26,12 +27,8 @@ use Maba\Component\Monetary\Validation\MoneyValidator;
 /**
  * Commission calculation class
  *
- * Params:
- *
- * @property MoneyCalculator $calculator
- * @property ExchangeRateCollection $exchangeRates
  */
-class Commission extends Model
+class Commission
 {
     /**
      * @var MoneyCalculator
@@ -124,7 +121,7 @@ class Commission extends Model
         );
         $this->exchangeRates = new ExchangeRateCollection();
         foreach ($this->config->getConfig('application.currencyExchangeRates') as $code => $rate) {
-            Util::getOrCreateExchangeRate($this->exchangeRates, $code, $rate);
+            $this->getOrCreateExchangeRate($this->exchangeRates, $code, $rate);
         }
     }
 
@@ -138,8 +135,8 @@ class Commission extends Model
 
         /* @var Input $input */
         while ($input = $inputStream->getRow()) {
-            $user = Util::getOrCreateUser($users, $input->userId);
-            $user->userType = $input->userType;
+            $user = $this->getOrCreateUser($users, $input->getUserId());
+            $user->setUserType($input->getUserType());
 
             $baseLogicConfig = new BaseLogicConfig($this->config->getConfig('baseLogic'));
             $logic = new CommissionBaseLogic($baseLogicConfig);
@@ -148,6 +145,45 @@ class Commission extends Model
             $commission = $logic->process($this, $user, $input);
 
             $outputStream->stream($commission, $this->formatter);
+        }
+    }
+
+    /**
+     * @param ExchangeRateCollection $collection
+     * @param string $currency
+     * @param float $rate
+     * @return ExchangeRate
+     */
+    protected function getOrCreateExchangeRate(ExchangeRateCollection $collection, $currency, $rate)
+    {
+        if (isset($collection[$currency])) {
+            return $collection[$currency];
+        } else {
+            $exchangeRate = new ExchangeRate([
+                'currency' => $currency,
+                'exchangeRate' => $rate
+            ]);
+            $collection[$currency] = $exchangeRate;
+            return $exchangeRate;
+        }
+    }
+
+    /**
+     * @param UserCollection $collection
+     * @param int $userId
+     * @return User
+     */
+    public function getOrCreateUser(UserCollection $collection, $userId)
+    {
+        if (isset($collection[$userId])) {
+            return $collection[$userId];
+        } else {
+             $user = new User([
+                'userId' => $userId,
+                'cashOut' => new CashOut()
+            ]);
+            $collection[$userId] = $user;
+            return $user;
         }
     }
 }

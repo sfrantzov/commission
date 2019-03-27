@@ -2,6 +2,7 @@
 
 namespace Commission\Tests;
 
+use Commission\Base\Date;
 use Commission\Base\Util;
 
 class WeekTest extends AbstractTest
@@ -16,7 +17,7 @@ class WeekTest extends AbstractTest
     public function test_input_valid_income($date, $expected)
     {
         $this->shouldBe('date ' . $date, function () use ($date, $expected) {
-            $calculated = Util::getWeek(new \DateTimeImmutable($date));
+            $calculated = (new Date(new \DateTimeImmutable($date)))->getWeek();
             verify($calculated)->same($expected);
         });
     }

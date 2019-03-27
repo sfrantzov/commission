@@ -51,8 +51,8 @@ abstract class AbstractBaseLogic
      */
     protected function add(MoneyInterface $first, MoneyInterface $second)
     {
-        $money = $this->application->calculator->ceil(
-            $this->application->calculator->add(
+        $money = $this->application->getCalculator()->ceil(
+            $this->application->getCalculator()->add(
                 $first,
                 $second
             )
@@ -67,8 +67,8 @@ abstract class AbstractBaseLogic
      */
     protected function sub(MoneyInterface $first, MoneyInterface $second)
     {
-        $money = $this->application->calculator->ceil(
-            $this->application->calculator->sub(
+        $money = $this->application->getCalculator()->ceil(
+            $this->application->getCalculator()->sub(
                 $first,
                 $second
             )
@@ -82,9 +82,9 @@ abstract class AbstractBaseLogic
      */
     protected function convertAmount(MoneyInterface $originalAmount)
     {
-        $convertedAmount = $this->application->calculator->div(
+        $convertedAmount = $this->application->getCalculator()->div(
             new Money($originalAmount->getAmount(), $this->application->getDefaultCurrency()),
-            $this->application->exchangeRates[$originalAmount->getCurrency()]->getExchangeRate()
+            $this->application->getExchangeRates()[$originalAmount->getCurrency()]->getExchangeRate()
         );
         return $convertedAmount;
     }
@@ -95,9 +95,9 @@ abstract class AbstractBaseLogic
      */
     protected function reverseConvertAmount(MoneyInterface $originalAmount)
     {
-        $convertedAmount = $this->application->calculator->mul(
+        $convertedAmount = $this->application->getCalculator()->mul(
             new Money($originalAmount->getAmount(), $originalAmount->getCurrency()),
-            $this->application->exchangeRates[$originalAmount->getCurrency()]->getExchangeRate()
+            $this->application->getExchangeRates()[$originalAmount->getCurrency()]->getExchangeRate()
         );
         return $convertedAmount;
     }
@@ -108,8 +108,8 @@ abstract class AbstractBaseLogic
      */
     protected function getOriginalAmount(Input $input)
     {
-        $this->validateCurrency($input->currency);
-        return new Money($input->amount, $input->currency);
+        $this->validateCurrency($input->getCurrency());
+        return new Money($input->getAmount(), $input->getCurrency());
     }
 
     /**
@@ -118,7 +118,7 @@ abstract class AbstractBaseLogic
      */
     protected function validateCurrency($currency)
     {
-        $currencies = array_keys(iterator_to_array($this->application->exchangeRates));
+        $currencies = array_keys(iterator_to_array($this->application->getExchangeRates()));
         Assert::that($currency)->inArray($currencies, 'Currency must be from ' . implode(', ', $currencies));
     }
 }

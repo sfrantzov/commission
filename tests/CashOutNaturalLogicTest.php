@@ -3,8 +3,9 @@
 namespace Commission\Tests;
 
 use Assert\InvalidArgumentException;
-use Commission\Base\Util;
+use Commission\Base\Config;
 use Commission\Collection\UserCollection;
+use Commission\Commission;
 use Commission\Logic\BaseLogic\CashOutNaturalLogic;
 use Maba\Component\Monetary\Formatting\FormattingContext;
 
@@ -16,9 +17,13 @@ class CashOutNaturalLogicTest extends AbstractTest
 
     public static function setUpBeforeClass()
     {
+        $configArray = (array) include 'tests.config.php';
+        $config = new Config();
+        $config->setConfig($configArray);
+        $application = new Commission($config);
         self::$users = new UserCollection();
-        Util::getOrCreateUser(self::$users, 1);
-        Util::getOrCreateUser(self::$users, 4);
+        $application->getOrCreateUser(self::$users, 1);
+        $application->getOrCreateUser(self::$users, 4);
     }
 
     /**
@@ -43,11 +48,13 @@ class CashOutNaturalLogicTest extends AbstractTest
                 'currency' => $currency
             ]);
 
-            $users = self::$users;
-            $user = Util::getOrCreateUser($users, $input->userId);
-            $user->userType = $input->userType;
+            $application = $this->getApplication();
 
-            $commission =  (new $this->logicClass($this->getLogicConfig()))->process($this->getApplication(), $user, $input);
+            $users = self::$users;
+            $user = $application->getOrCreateUser($users, $input->getUserId());
+            $user->setUserType($input->getUserType());
+
+            $commission =  (new $this->logicClass($this->getLogicConfig()))->process($application, $user, $input);
 
             $formatter = $this->getApplication()->getFormatter();
             $context = new FormattingContext();

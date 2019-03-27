@@ -9,14 +9,6 @@ use Commission\Base\Model;
 /**
  * Input data mapper
  *
- * Params:
- *
- * @property \DatetimeImmutable $date
- * @property int $userId
- * @property string $userType
- * @property string $operationType
- * @property string $amount
- * @property string $currency
  */
 class Input extends Model
 {

@@ -2,7 +2,7 @@
 
 namespace Commission\Logic\BaseLogic;
 
-use Commission\Base\Util;
+use Commission\Base\Date;
 use Commission\Commission;
 use Commission\Model\Input;
 use Commission\Model\User;
@@ -25,6 +25,7 @@ class CashOutNaturalLogic extends AbstractBaseLogic
      */
     public function process(Commission $application, User $user, Input $input)
     {
+        $userCashOut = $user->getCashOut();
         $this->application = $application;
         $originalAmount = $this->getOriginalAmount($input);
 
@@ -33,23 +34,23 @@ class CashOutNaturalLogic extends AbstractBaseLogic
         $cashOutCommission = $this->config->getConfig('naturalCashOutCommission') / 100;
         $maxCashOutCommission = $this->config->getConfig('maxNaturalCashOutCommission');
 
-        $week = Util::getWeek($input->date);
-        $oldCashOut = $user->getCashOut($week);
+        $week = (new Date($input->getDate()))->getWeek();
+        $oldCashOut = $userCashOut->getCashOut($week);
 
-        $convertedAmount = $application->calculator->ceil($this->convertAmount($originalAmount));
+        $convertedAmount = $application->getCalculator()->ceil($this->convertAmount($originalAmount));
         $cashOut = $this->add(
             $convertedAmount,
-            $user->getCashOut($week)
+            $userCashOut->getCashOut($week)
         );
-        $user->setCashOut($cashOut, $week);
+        $userCashOut->setCashOut($cashOut, $week);
 
-        $commission = $this->application->calculator->mul(
+        $commission = $this->application->getCalculator()->mul(
             $originalAmount,
             $cashOutCommission
         );
 
-        if ($user->getCount($week) <= $freeCashOut
-            && $this->application->calculator->isGt(
+        if ($userCashOut->getCount($week) <= $freeCashOut
+            && $this->application->getCalculator()->isGt(
                 new Money(
                     $maxCashOutCommission,
                     $defaultCurrency
@@ -57,32 +58,32 @@ class CashOutNaturalLogic extends AbstractBaseLogic
                 $oldCashOut
             )
         ) {
-            if ($this->application->calculator->isLt(
+            if ($this->application->getCalculator()->isLt(
                 new Money(
                     $maxCashOutCommission,
                     $defaultCurrency
                 ),
-                $user->getCashOut($week))
+                $userCashOut->getCashOut($week))
             ) {
                 $amount = $this->sub(
-                    $user->getCashOut($week),
+                    $userCashOut->getCashOut($week),
                     new Money(
                         $maxCashOutCommission,
                         $defaultCurrency
                     )
                 );
-                $commission = $this->application->calculator->mul(
+                $commission = $this->application->getCalculator()->mul(
                     $amount,
                     $cashOutCommission
                 );
                 $commission = $this->reverseConvertAmount(
                     new Money($commission->getAmount(),
-                        $input->currency)
+                        $input->getCurrency())
                 );
             } else {
-                $commission = new Money(0, $input->currency);
+                $commission = new Money(0, $input->getCurrency());
             }
         }
-        return $application->calculator->ceil($commission);
+        return $application->getCalculator()->ceil($commission);
     }
 }
